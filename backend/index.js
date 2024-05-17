@@ -1,12 +1,13 @@
 import express from "express";
 import mongoose from "mongoose";
 import { mongoDbUrl, PORT } from "./config.js";
+import customerRouter from "./routes/customerRoutes.js";
 import orderRouter from "./routes/orderRoutes.js";
 import productsRouter from "./routes/productsRouter.js";
 
 const app = express();
 
-// Middleware for parsing request bode
+// Middleware for parsing request mode
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -17,6 +18,8 @@ app.get("/", (req, res) => {
 app.use("/products", productsRouter);
 
 app.use("/orders", orderRouter);
+
+app.use("/customers", customerRouter);
 
 mongoose
   .connect(mongoDbUrl)

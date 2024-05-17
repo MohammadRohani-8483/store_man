@@ -22,8 +22,22 @@ const orderSchema = mongoose.Schema(
         },
       },
     ],
+    customer: {
+      id: {
+        type: String,
+        required: true,
+      },
+      phoneNumber: {
+        type: String,
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+    },
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 
 export const Order = mongoose.model("Order", orderSchema);
