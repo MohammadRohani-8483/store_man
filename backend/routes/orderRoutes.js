@@ -77,6 +77,7 @@ router.post("/", async (req, res) => {
         .send({ message: "چنین مشتری در لیست مشتریان موجود نیست!" });
     }
 
+    let isAvailable = true;
     const products = req.body.products.map(async (product) => {
       const existProduct = await Product.findById(product.id);
       if (existProduct.count >= product.quantity) {
@@ -95,32 +96,37 @@ router.post("/", async (req, res) => {
           quantity: product.quantity,
         };
       } else {
-        return res.status(400).send({
-          message: `موجودی محصول: ${existProduct.name} کمتر از تعدا درخواست است!`,
-        });
+        isAvailable = false;
       }
     });
 
+    if (!isAvailable)
+      return res
+        .status(400)
+        .send({ message: "محصولاتی که قصد خرید دارید موجود نیست!" });
+
     const processedProducts = await Promise.all(products);
 
-    const totalPrice = processedProducts.reduce((prev, curr) => {
-      prev + curr.price;
-    }, 0);
+    const totalPrice = processedProducts.reduce(
+      (accumulator, currentValue) => accumulator + currentValue.price,
+      0
+    );
 
     const order = await Order.create({
       products: processedProducts,
-      totalPrice,
+      totalPrice: totalPrice,
       customer: {
         id: customer.id,
         name: customer.name,
         phoneNumber: customer.phoneNumber,
       },
     });
+    console.log(order);
 
     return res.status(201).send(order);
   } catch (err) {
-    console.error(err.message);
-    return res.status(500).send(err);
+    console.error(err);
+    return res.status(500).send({ err });
   }
 });
 

@@ -38,13 +38,17 @@ router.get("/", async (req, res) => {
 // Create new products
 router.post("/", async (req, res) => {
   try {
-    if (!req.body.name || !req.body.price || !req.body.count) {
-      return res
-        .status(400)
-        .send({
-          message:
-            "مقادیر مورد نیاز برای ثبت محصول را وارد کنید: نام، قیمت، تعداد موجودی.",
-        });
+    if (
+      !req.body.name ||
+      !req.body.price ||
+      !req.body.count ||
+      req.body.count < 0 ||
+      req.body.price < 0
+    ) {
+      return res.status(400).send({
+        message:
+          "مقادیر مورد نیاز برای ثبت محصول را وارد کنید: نام، قیمت، تعداد موجودی.",
+      });
     }
 
     const products = await Product.find({});
